@@ -130,8 +130,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Use top 30 market cap coins
-# Use the last 30 days
-# colors -50% to 50%
-# Save data to csv to prevent rate limit

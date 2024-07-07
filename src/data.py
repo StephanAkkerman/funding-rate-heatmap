@@ -135,15 +135,18 @@ def load_funding_rate_data(directory):
         # Get the latest date of the data
         latest_date = df["calcTime"].max()
 
-        # If the data is older than 8 hours, fetch new data
-        if pd.Timestamp.now() - latest_date > pd.Timedelta(hours=8):
+        # If the data is older than 12 hours, fetch new data
+        if pd.Timestamp.now() - latest_date > pd.Timedelta(hours=12):
             print(f"Fetching new data for {file}")
             symbol = file.split("/")[-1].split(".")[0]
+            symbol = symbol.split("\\")[-1]
             b = BinanceClient()
+            # Get the new data
             new_df = b.fund_rating(symbol, rows=10_000)
+            # If it is not empty, save it to the file
             if not new_df.empty:
                 new_df.to_csv(file, index=False)
-                df = new_df
+                df = pd.read_csv(file, parse_dates=["calcTime"])
 
         df_list.append(df)
 
@@ -169,5 +172,4 @@ def prepare_heatmap_data(df, NUM_DAYS: int) -> pd.DataFrame:
     heatmap_data = heatmap_data.ffill(axis=1)
     # Also do a backward fill to handle NaN values at the start
     heatmap_data = heatmap_data.bfill(axis=1)
-
     return heatmap_data
